@@ -24,3 +24,11 @@ export interface IBuyer {
   phone: string; //Номер телефона
   address: string; //Адрес
 }
+
+
+export interface IValidationResult {
+    payment?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
+}

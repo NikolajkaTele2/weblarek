@@ -108,7 +108,7 @@ interface IProduct {
   image: string; //Ссылка на изображение продукта
   title: string; //Заголовок
   category: string; //Категория продукта
-  price: number | null; //Цента продукта, может отсутствовать
+  price: number | null; //Цена продукта, может отсутствовать
 }
 
 interface IBuyer {
@@ -147,6 +147,11 @@ setDetailedProduct(product: IProduct) - сохранение товара для
 getDetailedProduct(): IProduct | null - получение товара для подробного отображения
 ```
 #### Класс Basket
+
+##### Конструктор
+```
+constructor(initialProducts: IProduct[] = [])
+```
 
 ##### Поля класса
 
