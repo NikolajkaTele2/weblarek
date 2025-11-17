@@ -103,19 +103,19 @@ Presenter - презентер содержит основную логику п
 ### Интерфейсы данных
 ```
 interface IProduct {
-  id: string; <!-- Уникальный идентификатор продукта  -->
-  description: string; <!-- Описание продукта  -->
-  image: string; <!-- Ссылка на изображение продукта  -->
-  title: string; <!-- Заголовок -->
-  category: string; <!-- Категория продукта -->
-  price: number | null; <!-- Цента продукта, может отсутствовать -->
+  id: string; //Уникальный идентификатор продукта
+  description: string; //Описание продукта
+  image: string; //Ссылка на изображение продукта
+  title: string; //Заголовок
+  category: string; //Категория продукта
+  price: number | null; //Цента продукта, может отсутствовать
 }
 
 interface IBuyer {
-  payment: string; <!-- Способ оплаты карта или наличка (card/cash) -->
-  email: string; <!-- Электронная почта  -->
-  phone: string; <!-- Номер телефона  -->
-  address: string; <!-- Адрес  -->
+  payment: string; //Способ оплаты карта или наличка (card/cash)
+  email: string; //Электронная почта
+  phone: string; //Номер телефона
+  address: string; //Адрес
 }
 ```
 ### Классы данных
