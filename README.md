@@ -124,50 +124,75 @@ interface IBuyer {
 
 Поля класса
 
+
 private _allProducts: IProduct[] - список всех товаров каталога
+
 private _selectedProduct: IProduct - выбранный товар
+
 
 Методы класса
 
 setAllProducts(products: IProduct[]) - сохранение массива товаров полученного в параметрах метода
+
 getAllProducts(): IProduct[] - получение массива товаров из модели
+
 getProduct(id: string): IProduct | undefined - получение одного товара по его id
+
 setDetailedProduct(product: IProduct) - сохранение товара для подробного отображения
+
 getDetailedProduct(): IProduct | null - получение товара для подробного отображения
 
 #### Класс Basket
 
 Поля класса
 
+
 private _selectedProducts: IProduct[] - список товаров, добавленных в корзину
+
 
 Методы класса
 
 getSelectedProducts(): IProduct[] - получение массива товаров, которые находятся в корзине
+
 addProduct(product: IProduct): void - добавление товара, который был получен в параметре, в массив корзины
+
 removeProduct(productId: string): void - удаление товара, полученного в параметре из массива корзины
+
 clearBasket(): void - очистка корзины
+
 getTotalPrice(): number - получение стоимости всех товаров в корзине
+
 getItemsCount(): number - получение количества товаров в корзине
+
 hasProduct(productId: string): boolean - проверка наличия товара в корзине по его id, полученного в параметр метода
 
+
 #### Класс Buyer
+
 
 Поля класса
 
 private _buyerData: Partial<IBuyer> - данные покупателя
 
+
 Методы класса
 
 setBuyerData(data: Partial<IBuyer>): void - сохранение данных в модели
+
 setPayment(payment: string): void - отдельное сохранение способа оплаты
+
 setEmail(email: string): void - отдельное сохранение почты
+
 setPhone(phone: string): void - отдельное сохранение телефона
+
 setAddress(address: string): void - отдельное сохранение адреса
 
 getBuyerData(): Partial<IBuyer> - получение всех данных покупателя
+
 clearData(): void - очистка данных покупателя
+
 validate(): IValidationResult - проверка валидности полей
+
 
 
 
