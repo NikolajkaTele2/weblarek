@@ -25,10 +25,14 @@ export interface IBuyer {
   address: string; //Адрес
 }
 
+// Валидация покупателя
 
 export interface IValidationResult {
-    payment?: string;
-    address?: string;
-    email?: string;
-    phone?: string;
+    isValid: boolean;
+    errors: {
+        payment?: string;
+        email?: string;
+        phone?: string;
+        address?: string;
+    };
 }

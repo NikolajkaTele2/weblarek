@@ -178,6 +178,10 @@ hasProduct(productId: string): boolean - проверка наличия тов�
 
 #### Класс Buyer
 
+##### Конструктор
+```
+constructor(initialData: Partial<IBuyer> = {})
+```
 
 ##### Поля класса
 ```
@@ -201,6 +205,10 @@ getBuyerData(): Partial<IBuyer> - получение всех данных по�
 clearData(): void - очистка данных покупателя
 
 validate(): IValidationResult - проверка валидности полей
+
+validateField(field: keyof IBuyer): { isValid: boolean; error?: string } - проверка валидности отдельного поля
+ 
+getFieldName(field: keyof IBuyer): string - вспомогательная функция для validateField, которая возвращает запрашиваемое поле
 ```
 
 
