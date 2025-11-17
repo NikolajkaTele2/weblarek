@@ -1,4 +1,5 @@
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+export type TPayment = 'card' | 'cash' | '';
 
 export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
@@ -19,7 +20,7 @@ export interface IProduct {
 // Покупатель
 
 export interface IBuyer {
-  payment: string; //Способ оплаты карта или наличка (card/cash)
+  payment: TPayment; //Способ оплаты карта или наличка (card/cash)
   email: string; //Электронная почта
   phone: string; //Номер телефона
   address: string; //Адрес

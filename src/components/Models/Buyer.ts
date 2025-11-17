@@ -1,5 +1,4 @@
-import { IBuyer, IValidationResult } from '../../types';
-
+import { IBuyer, IValidationResult, TPayment } from '../../types';
 
 export class Buyer {
   private _buyerData: Partial<IBuyer>
@@ -10,11 +9,19 @@ export class Buyer {
 
   // сохранение данных в модели
   public setBuyerData(data: Partial<IBuyer>): void {
-    this._buyerData = { ...this._buyerData, ...data };
+    // Фильтруем payment, чтобы допускать только валидные значения
+    const filteredData: Partial<IBuyer> = { ...data };
+    
+    if (data.payment && data.payment !== 'card' && data.payment !== 'cash') {
+        // Если payment невалидный, не сохраняем его
+        delete filteredData.payment;
+    }
+    
+    this._buyerData = { ...this._buyerData, ...filteredData };
   }
 
   // отдельное сохранение способа оплаты
-  public setPayment(payment: string): void {
+  public setPayment(payment: TPayment): void {
     this._buyerData.payment = payment;
   }
 
@@ -47,7 +54,7 @@ export class Buyer {
   public validate(): IValidationResult {
     const errors: IValidationResult['errors'] = {};
     
-    if (!this._buyerData.payment?.trim()) {
+    if (!this._buyerData.payment) {
         errors.payment = 'Способ оплаты обязателен для заполнения';
     }
     
@@ -72,16 +79,33 @@ export class Buyer {
   // проверка валидности отдельного поля
   public validateField(field: keyof IBuyer): { isValid: boolean; error?: string } {
     const value = this._buyerData[field];
-    if (!value?.trim()) {
+    
+    if (field === 'payment') {
+      if (!value || value === '') {
         return { 
-            isValid: false, 
-            error: `${this.getFieldName(field)} обязателен для заполнения` 
+          isValid: false, 
+          error: 'Способ оплаты обязателен для заполнения' 
         };
+      } else if (value !== 'card' && value !== 'cash') {
+        return { 
+          isValid: false, 
+          error: 'Способ оплаты должен быть "card" или "cash"' 
+        };
+      }
+    } else {
+      if (!(value as string)?.trim()) {
+        return { 
+          isValid: false, 
+          error: `${this.getFieldName(field)} обязателен для заполнения` 
+        };
+      }
     }
+    
     return { isValid: true };
   }
 
-  // 
+
+  // вспомогательная функция для validateField, которая возвращает запрашиваемое поле
   private getFieldName(field: keyof IBuyer): string {
     const names = {
         payment: 'Способ оплаты',
