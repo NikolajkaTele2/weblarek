@@ -1,118 +1,80 @@
-import { IBuyer, IValidationResult, TPayment } from '../../types';
+import { IBuyer, IValidationResult, TPayment } from '../../types'; 
 
 export class Buyer {
-  private _buyerData: Partial<IBuyer>
+  private payment: TPayment;
+  private address: string;
+  private email: string;
+  private phone: string;
 
   constructor(initialData: Partial<IBuyer> = {}) {
-    this._buyerData = initialData;
+    // Инициализируем поля с дефолтными значениями
+    this.payment = initialData.payment || '';
+    this.email = initialData.email || '';
+    this.phone = initialData.phone || '';
+    this.address = initialData.address || '';
   }
 
   // сохранение данных в модели
   public setBuyerData(data: Partial<IBuyer>): void {
-    // Фильтруем payment, чтобы допускать только валидные значения
-    const filteredData: Partial<IBuyer> = { ...data };
-    
-    if (data.payment && data.payment !== 'card' && data.payment !== 'cash') {
-        // Если payment невалидный, не сохраняем его
-        delete filteredData.payment;
+
+    if (data.payment !== undefined) {
+      this.payment = data.payment;
     }
-    
-    this._buyerData = { ...this._buyerData, ...filteredData };
-  }
-
-  // отдельное сохранение способа оплаты
-  public setPayment(payment: TPayment): void {
-    this._buyerData.payment = payment;
-  }
-
-  // отдельное сохранение почты
-  public setEmail(email: string): void {
-    this._buyerData.email = email;
-  }
-
-  // отдельное сохранение телефона
-  public setPhone(phone: string): void {
-      this._buyerData.phone = phone;
-  }
-
-  // отдельное сохранение адреса
-  public setAddress(address: string): void {
-    this._buyerData.address = address;
+    if (data.email !== undefined) {
+      this.email = data.email;
+    }
+    if (data.phone !== undefined) {
+      this.phone = data.phone;
+    }
+    if (data.address !== undefined) {
+      this.address = data.address;
+    }
   }
 
   // получение всех данных покупателя
-  public getBuyerData(): Partial<IBuyer> {
-    return { ...this._buyerData };
+  public getBuyerData(): IBuyer {
+    return {
+      payment: this.payment,
+      email: this.email,
+      phone: this.phone,
+      address: this.address
+    };
   }
 
   // очистка данных покупателя
   public clearData(): void {
-    this._buyerData = {};
+    this.payment = '';
+    this.email = '';
+    this.phone = '';
+    this.address = '';
   }
 
   // проверка валидности полей
   public validate(): IValidationResult {
     const errors: IValidationResult['errors'] = {};
     
-    if (!this._buyerData.payment) {
-        errors.payment = 'Способ оплаты обязателен для заполнения';
+    // Проверка способа оплаты
+    if (!this.payment) {
+      errors.payment = 'Способ оплаты обязателен для заполнения';
+    } else if (this.payment !== 'card' && this.payment !== 'cash') {
+      errors.payment = 'Способ оплаты должен быть "card" или "cash"';
     }
     
-    if (!this._buyerData.email?.trim()) {
-        errors.email = 'Email обязателен для заполнения';
+    // Проверка email
+    if (!this.email.trim()) {
+      errors.email = 'Email обязателен для заполнения';
     }
     
-    if (!this._buyerData.phone?.trim()) {
-        errors.phone = 'Телефон обязателен для заполнения';
+    // Проверка телефона
+    if (!this.phone.trim()) {
+      errors.phone = 'Телефон обязателен для заполнения';
     }
     
-    if (!this._buyerData.address?.trim()) {
-        errors.address = 'Адрес обязателен для заполнения';
+    // Проверка адреса
+    if (!this.address.trim()) {
+      errors.address = 'Адрес обязателен для заполнения';
     }
 
-    return {
-      isValid: Object.keys(errors).length === 0,
-      errors
-    };
-  }
-
-  // проверка валидности отдельного поля
-  public validateField(field: keyof IBuyer): { isValid: boolean; error?: string } {
-    const value = this._buyerData[field];
-    
-    if (field === 'payment') {
-      if (!value || value === '') {
-        return { 
-          isValid: false, 
-          error: 'Способ оплаты обязателен для заполнения' 
-        };
-      } else if (value !== 'card' && value !== 'cash') {
-        return { 
-          isValid: false, 
-          error: 'Способ оплаты должен быть "card" или "cash"' 
-        };
-      }
-    } else {
-      if (!(value as string)?.trim()) {
-        return { 
-          isValid: false, 
-          error: `${this.getFieldName(field)} обязателен для заполнения` 
-        };
-      }
-    }
-    
-    return { isValid: true };
-  }
-
-
-  // вспомогательная функция для validateField, которая возвращает запрашиваемое поле
-  private getFieldName(field: keyof IBuyer): string {
-    const names = {
-        payment: 'Способ оплаты',
-        email: 'Email',
-        phone: 'Телефон',
-        address: 'Адрес'
-    };
-    return names[field];
+    return { errors } ;
   }
 }

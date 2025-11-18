@@ -26,16 +26,12 @@ export interface IBuyer {
   address: string; //Адрес
 }
 
-// Валидация покупателя
+// ошибки в валидации
+export type TBuyerErrors = Partial<Record<keyof IBuyer, string>>;
 
-export interface IValidationResult {
-    isValid: boolean;
-    errors: {
-        payment?: string;
-        email?: string;
-        phone?: string;
-        address?: string;
-    };
+// Валидация покупателя
+export interface IValidationResult { 
+    errors: TBuyerErrors;
 }
 
 export interface ISuccessResponse {
@@ -43,13 +39,9 @@ export interface ISuccessResponse {
     total: number;
 }
 // Заказ для API
-export interface IOrderData {
-    payment: TPayment;
-    email: string;
-    phone: string;
-    address: string;
-    total: number;
-    items: string[];
+export interface IOrderData extends IBuyer {
+    total: number; 
+    items: string[]; 
 }
 
 export interface IProductResponse {

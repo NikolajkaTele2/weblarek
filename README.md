@@ -180,12 +180,16 @@ hasProduct(productId: string): boolean - проверка наличия тов�
 
 ##### Конструктор
 ```
-constructor(initialData: Partial<IBuyer> = {})
+constructor(data?: Partial<IBuyer>)
 ```
 
 ##### Поля класса
 ```
-private _buyerData: Partial<IBuyer> - данные покупателя
+TPayment = 'card' | 'cash' | '' - оплата только card или cash
+private payment: TPayment; - способ оплаты
+private address: string; - адрес
+private email: string; - почта
+private phone: string; - телефон
 ```
 
 ##### Методы класса

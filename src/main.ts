@@ -56,26 +56,20 @@ console.log('Items in basket after clear', myBasket.getSelectedProducts());
 console.log("=========================================^_^==================================================")
 
 console.log('TEST BUYER')
+console.log('add payment and address', myBuyer.getBuyerData())
 
 myBuyer.setBuyerData({
   payment: 'card',
   address: 'Baker street 221B'
 })
 
-console.log('add payment and address', myBuyer.getBuyerData())
-
-myBuyer.setEmail('IAmSherlocked@gmail.com')
-console.log('add mail', myBuyer.getBuyerData())
-
-myBuyer.setPhone('8-800-555-35-35')
-console.log('add phone', myBuyer.getBuyerData())
-
 console.log('validate', myBuyer.validate())
-
-myBuyer.setAddress('')
-console.log('delete address', myBuyer.getBuyerData())
-console.log('validate', myBuyer.validate())
-
+console.log('add phone amd mail')
+myBuyer.setBuyerData({
+  phone: '8-800-555-35-35',
+  email: 'moriarty@sucks.gb'
+})
+console.log('validate after fix', myBuyer.validate())
 console.log('FINISH TEST')
 console.log("=========================================^_^==================================================")
 
