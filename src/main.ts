@@ -2,7 +2,6 @@ import './scss/styles.scss';
 import { Gallery } from './components/Models/Gallery';
 import { Basket } from './components/Models/Basket';
 import { Buyer } from './components/Models/Buyer';
-import { IBuyer, IProduct } from './types';
 import { apiProducts } from './utils/data'
 import { API_URL } from './utils/constants';
 import { BuyApi } from './components/base/BuyAPI';
