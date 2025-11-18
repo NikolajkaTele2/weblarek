@@ -4,6 +4,9 @@ import { Basket } from './components/Models/Basket';
 import { Buyer } from './components/Models/Buyer';
 import { IBuyer, IProduct } from './types';
 import { apiProducts } from './utils/data'
+import { API_URL } from './utils/constants';
+import { BuyApi } from './components/base/BuyAPI';
+import { Api } from './components/base/Api';
 
 
 
@@ -76,4 +79,24 @@ console.log('validate', myBuyer.validate())
 
 console.log('FINISH TEST')
 console.log("=========================================^_^==================================================")
+
+console.log("TEST API")
+
+const API = new Api(API_URL);
+const buyApi = new BuyApi(API);
+
+try {
+  console.log('get items...');
+  const response = await buyApi.getProductList();
+  
+  myGallery.setAllProducts(response);
+  
+  console.log('count items', myGallery.getAllProducts().length);
+  console.log('item 1', myGallery.getAllProducts()[0]);
+  console.log('all items', myGallery.getAllProducts());
+}
+catch(err){
+  console.error('ERROR!!!', err);
+}
+
 

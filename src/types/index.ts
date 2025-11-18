@@ -37,3 +37,22 @@ export interface IValidationResult {
         address?: string;
     };
 }
+
+export interface ISuccessResponse {
+    id: string;
+    total: number;
+}
+// Заказ для API
+export interface IOrderData {
+    payment: TPayment;
+    email: string;
+    phone: string;
+    address: string;
+    total: number;
+    items: string[];
+}
+
+export interface IProductResponse {
+    items: IProduct[];
+    total: number;
+}
