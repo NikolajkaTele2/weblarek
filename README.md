@@ -420,6 +420,7 @@ modal:close — модальное окно закрыто
 ### События
 
 | Event | Класс | Описание |
+| ------------- | ------------- | ------------- |
 | product:select | CardGallery | выбор товара в каталоге |
 | product:add-to-basket | CardGallery | кнопка «Купить» в каталоге |
 | product:toggle-from-preview | CardPreview | кнопка «Купить» или «Удалить из корзины» в модальном окне товара |
