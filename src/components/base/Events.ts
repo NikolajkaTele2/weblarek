@@ -89,3 +89,5 @@ export class EventEmitter implements IEvents {
     }
 }
 
+export const events = new EventEmitter();
+
