@@ -8,7 +8,7 @@ export class CardCatalog extends BaseCard {
 
     constructor(container: HTMLElement) {
         if (!container) {
-          throw new Error('Container element is required for BaseForm');
+          throw new Error('Container element is required for CardGallery');
         }
         super(container);
 
