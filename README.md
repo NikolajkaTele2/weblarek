@@ -438,7 +438,19 @@ modal:close — модальное окно закрыто
 | modal:open | Modal | открытие модального окна | 
 | modal:close | Modal | закрытие модального окна | 
 | success:close | SuccessView | закрытие окна успешного заказа | 
+| basket:changed | Basket | изменение корзины |
+| basket:item-added | Basket | добавление товара в корзину |
+| basket:item-removed | Basket | удаление товара из корзины |
+| basket:cleared | Basket | корзина очищена |
+| buyer:changed | Buyer | изменились данные покупателя |
+| buyer:cleared | Buyer | данные покупателя очищены |
+| gallery:changed | Gallery | изменился набор товаров |
+| gallery:selected | Gallery | выбраны товары |
 
+
+
+
+## Презентер
 
 
 

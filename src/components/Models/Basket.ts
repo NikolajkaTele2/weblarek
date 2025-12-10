@@ -1,4 +1,5 @@
 import { IProduct } from '../../types';
+import { events } from '../base/Events';
 
 export class Basket {
   private selectedProducts: IProduct[];
@@ -15,18 +16,46 @@ export class Basket {
   // добавление товара, который был получен в параметре, в массив корзины
   public addProduct(product: IProduct): void {
     this.selectedProducts.push(product);
+    events.emit('basket:changed', {
+      items: this.selectedProducts,
+      total: this.getTotalPrice(),
+      count: this.getItemsCount()
+    });
+    events.emit('basket:item-added', {
+      product,
+      basket: this.selectedProducts
+    });
   }
 
   // удаление товара, полученного в параметре из массива корзины
   public removeProduct(productId: string): void {
+    const product = this.selectedProducts.find(p => p.id === productId);
     this.selectedProducts = this.selectedProducts.filter(
       product => product.id !== productId
     );
+    events.emit('basket:changed', {
+      items: this.selectedProducts,
+      total: this.getTotalPrice(),
+      count: this.getItemsCount()
+    });
+    if (product) {
+      events.emit('basket:item-removed', {
+        productId,
+        product,
+        basket: this.selectedProducts
+      });
+    }
   }
 
   // очистка корзины
   public clearBasket(): void {
     this.selectedProducts = [];
+    events.emit('basket:changed', {
+      items: this.selectedProducts,
+      total: this.getTotalPrice(),
+      count: this.getItemsCount()
+    });
+    events.emit('basket:cleared', {});
   }
 
   // получение стоимости всех товаров в корзине

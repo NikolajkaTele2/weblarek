@@ -1,4 +1,5 @@
 import { IBuyer, IValidationResult, TPayment } from '../../types'; 
+import { events } from '../base/Events';
 
 export class Buyer {
   private payment: TPayment;
@@ -29,6 +30,7 @@ export class Buyer {
     if (data.address !== undefined) {
       this.address = data.address;
     }
+    events.emit('buyer:changed', {});
   }
 
   // получение всех данных покупателя
@@ -47,6 +49,7 @@ export class Buyer {
     this.email = '';
     this.phone = '';
     this.address = '';
+    events.emit('buyer:cleared', {});
   }
 
   // проверка валидности полей
