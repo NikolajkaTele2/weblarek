@@ -1,7 +1,7 @@
 import { events } from '../base/Events';
 import { ensureElement } from '../../utils/utils';
 
-export class Page {
+export class PageView {
 	private gallery: HTMLElement;
 	private basketButton: HTMLButtonElement;
 	private basketCounter: HTMLElement;

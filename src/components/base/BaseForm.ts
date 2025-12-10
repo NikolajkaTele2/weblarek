@@ -8,7 +8,7 @@ export abstract class BaseForm {
   // проверка валидности конструктра
   constructor(container: HTMLElement) {
     if (!container) {
-        throw new Error('Container element is required for BaseForm');
+      throw new Error('Container element is required for BaseForm');
     }
     this.container = container;
 
