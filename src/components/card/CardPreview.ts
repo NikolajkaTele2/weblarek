@@ -10,6 +10,9 @@ export class CardPreview extends BaseCard {
 	private isFree = false; // товар "бесценно"
 
 	constructor(container: HTMLElement) {
+		if (!container) {
+			throw new Error('Container element is required for CardPreview');
+		}
 		super(container);
 
 		this.descriptionElement = ensureElement<HTMLElement>('.card__text', container);

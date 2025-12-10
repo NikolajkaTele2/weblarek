@@ -13,6 +13,9 @@ export class DeliveryForm extends BaseForm {
 	private submitButton: HTMLButtonElement;
 
 	constructor(container: HTMLElement) {
+		if (!container) {
+			throw new Error('Container element is required for DeliveryForm');
+		}
 		super(container);
 
 		this.paymentButtons = ensureAllElements<HTMLButtonElement>(

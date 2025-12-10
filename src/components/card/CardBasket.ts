@@ -12,16 +12,14 @@ export class BasketItemView {
   private id = '';
 
   constructor() {
-    // клонируем шаблон через утилиту
+    
     this.container = cloneTemplate<HTMLElement>('#card-basket');
 
-    // находим внутренние DOM-элементы
     this.indexElement = ensureElement<HTMLElement>('.basket__item-index', this.container);
     this.titleElement = ensureElement<HTMLElement>('.card__title', this.container);
     this.priceElement = ensureElement<HTMLElement>('.card__price', this.container);
     this.deleteButton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
 
-    // обработчик удаления из корзины
     this.deleteButton.addEventListener('click', () => {
       if (this.id) {
         events.emit('basket:item-remove', { id: this.id });

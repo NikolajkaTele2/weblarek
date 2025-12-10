@@ -363,6 +363,7 @@ render(data?: Partial<T>)
 ```
 - constructor()
 - open(content: HTMLElement)
+- isOpened()
 - close()
 ```
 

@@ -10,6 +10,9 @@ export class ContactsForm extends BaseForm {
   private errorElement: HTMLElement | null;
 
   constructor(container: HTMLElement) {
+    if (!container) {
+      throw new Error('Container element is required for ContactsForm');
+    }
     super(container);
 
     this.emailInput = ensureElement<HTMLInputElement>('input[name="email"]', this.formElement);
