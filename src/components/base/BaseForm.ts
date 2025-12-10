@@ -5,6 +5,7 @@ export abstract class BaseForm {
   protected container: HTMLElement;
   protected formElement: HTMLFormElement;
 
+  // проверка валидности конструктра
   constructor(container: HTMLElement) {
     if (!container) {
         throw new Error('Container element is required for BaseForm');
@@ -18,10 +19,12 @@ export abstract class BaseForm {
 
     this.formElement = form;
 
-  
     this.formElement.addEventListener('input', (event) => {
       const target = event.target as HTMLInputElement | HTMLTextAreaElement;
-      if (!target.name) return;
+      if (!target.name) {
+        console.warn('Input element without name attribute detected:', target);
+        return;
+      }
 
       events.emit('form:change', {
         name: target.name,
