@@ -60,7 +60,7 @@ export class DeliveryForm extends BaseForm {
 		// отправка формы
 		this.formElement.addEventListener('submit', (e) => {
 			e.preventDefault();
-			events.emit('order:submit-step1', {});
+			events.emit('order:submit-stepOne', {});
 		});
 	}
 

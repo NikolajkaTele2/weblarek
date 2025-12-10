@@ -2,7 +2,7 @@ import { IProduct } from '../../types';
 import { events } from '../base/Events';
 import { cloneTemplate, ensureElement } from '../../utils/utils';
 
-export class BasketItemView {
+export class CardBasket  {
   private container: HTMLElement;
   private indexElement: HTMLElement;
   private titleElement: HTMLElement;

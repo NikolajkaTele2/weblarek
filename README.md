@@ -421,4 +421,37 @@ modal:close — модальное окно закрыто
 
 | Event | Класс | Описание |
 | --- | --- | --- |
+| product:select | CardGallery | выбор товара в каталоге |
+| --- | --- | --- |
+| product:add-to-basket | CardGallery | кнопка «Купить» в каталоге |
+| --- | --- | --- |
+| product:toggle-from-preview | CardPreview | кнопка «Купить» или «Удалить из корзины» в модальном окне товара |
+| --- | --- | --- |
+| basket:item-remove | CardBasket | удаление товара из карточки в корзине |
+| --- | --- | --- |
+| basket:submit | BasketView | кнопка «Оформить» в корзине |
+| --- | --- | --- |
+| basket:open | PageView | клик по иконке корзины |
+| --- | --- | --- |
+| order:change-payment | DeliveryForm | изменение способа оплаты |
+| --- | --- | --- |
+| order:change-address | DeliveryForm | изменение адреса |
+| --- | --- | --- |
+| order:submit-stepOne | DeliveryForm | переход к следующему шагу |
+| --- | --- | --- |
+| order:change-email | ContactsForm | изменение e-mail |
+| --- | --- | --- |
+| order:change-phone | ContactsForm | изменение телефона |
+| --- | --- | --- |
+| order:submit-stepTwo | ContactsForm | переход к следующему шагу |
+| --- | --- | --- |
+| form:change | BaseForm | изменение любого поля формы |
+| --- | --- | --- |
+| modal:open | Modal | открытие модального окна |
+| --- | --- | --- |
+| modal:close | Modal | закрытие модального окна |
+| --- | --- | --- |
+| success:close | SuccessView | закрытие окна успешного заказа |
+| --- | --- | --- |
+
 

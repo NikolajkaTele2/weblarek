@@ -3,7 +3,7 @@ import { IProduct } from '../../types';
 import { events } from '../base/Events';
 import { CDN_URL, categoryMap } from '../../utils/constants';
 
-export class CardCatalog extends BaseCard {
+export class CardGallery extends BaseCard {
     private id: string = '';
 
     constructor(container: HTMLElement) {
@@ -18,13 +18,13 @@ export class CardCatalog extends BaseCard {
 
         const button = this.buttonElement;
         if (button) {
-            button.addEventListener('click', (event) => {
-                event.stopPropagation();
+          button.addEventListener('click', (event) => {
+            event.stopPropagation();
 
-                if (button.disabled) return; // "Недоступно" — ничего не делаем
+            if (button.disabled) return; // "Недоступно" — ничего не делаем
 
-                events.emit('product:add-to-basket', { id: this.id });
-            });
+            events.emit('product:add-to-basket', { id: this.id });
+          });
         }
     }
 

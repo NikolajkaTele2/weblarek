@@ -45,7 +45,7 @@ export class ContactsForm extends BaseForm {
     this.formElement.addEventListener('submit', (event) => {
       event.preventDefault();
       if (!this.submitButton.disabled) {
-        events.emit('order:submit-step2', {});
+        events.emit('order:submit-stepTwo', {});
       }
     });
   }

@@ -38,6 +38,7 @@ export class Modal {
       this.contentElement.replaceChildren(content);
       this.modalElement.classList.add('modal_active');
       this.modalElement.style.overflow = 'hidden';
+      events.emit('modal:open', {});
   }
 
   isOpened(): boolean {
