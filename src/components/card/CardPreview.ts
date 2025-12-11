@@ -17,13 +17,33 @@ export class CardPreview extends BaseCard {
 
 		this.descriptionElement = ensureElement<HTMLElement>('.card__text', container);
 
+    events.on('basket:changed', (data: { items: IProduct[] }) => {
+        console.log('CardPreview: получено basket:changed, обновляю кнопку');
+        this.updateButton(data.items);
+    });
+
 		const button = this.buttonElement;
 		if (button) {
+			console.log('CardPreview: кнопка найдена, текст:', button.textContent);
+			
 			button.addEventListener('click', () => {
-				// запрещаем покупку бесценного товара или при disabled
-				if (this.isFree || button.disabled) return;
+					console.log('CardPreview: клик по кнопке, this.id =', this.id);
+					
+					// ДОБАВЬ ЭТИ ПРОВЕРКИ:
+					if (!this.id) {
+							console.error('CardPreview: ID товара не установлен!');
+							return;
+					}
+					
+					// ДОБАВЬ ПРОВЕРКУ НА БЕСПЛАТНЫЙ ТОВАР И DISABLED:
+					if (this.isFree || button.disabled) {
+							console.log('CardPreview: Кнопка заблокирована (бесплатный или disabled)');
+							return;
+					}
 
-				events.emit('product:toggle-from-preview', { id: this.id });
+					// ДОБАВЬ ОТПРАВКУ СОБЫТИЯ:
+					console.log('CardPreview: Отправляю событие product:toggle-from-preview с id =', this.id);
+					events.emit('product:toggle-from-preview', { id: this.id });
 			});
 		}
 	}
@@ -32,15 +52,24 @@ export class CardPreview extends BaseCard {
 		const button = this.buttonElement;
 		if (!button) return;
 
+    if (!this.id) {
+        console.warn('CardPreview.updateButton: id не установлен');
+        return;
+    }
+    
 		if (this.isFree) {
 			this.setButtonDisabled(true, 'Недоступно');
 			return;
 		}
 
 		const isInBasket = items.some((item) => item.id === this.id);
+    console.log('CardPreview.updateButton: товар в корзине?', isInBasket, 'id:', this.id);
+    
     const buttonText = isInBasket ? 'Удалить из корзины' : 'Купить';
-        
+    console.log('CardPreview.updateButton: устанавливаю текст:', buttonText);
+    
     this.setButtonDisabled(false, buttonText);
+		console.log('=== CardPreview.updateButton завершен ===');
 	}
 
 	render(data: IProduct): HTMLElement {

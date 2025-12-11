@@ -15,6 +15,12 @@ export class Basket {
 
   // добавление товара, который был получен в параметре, в массив корзины
   public addProduct(product: IProduct): void {
+    
+    if (this.hasProduct(product.id)) {
+        console.log(`🛒 Товар "${product.title}" уже в корзине, не добавляю повторно`);
+        return;
+    }
+
     this.selectedProducts.push(product);
     events.emit('basket:changed', {
       items: this.selectedProducts,
