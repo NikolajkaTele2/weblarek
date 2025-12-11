@@ -10,7 +10,8 @@ import { PageView } from './components/base/PageView';
 import { Modal } from './components/base/Modal';
 import { CardGallery } from './components/card/CardGallery';
 import { CardPreview } from './components/card/CardPreview';
-import { IProduct } from './types';
+import { IProduct, TPayment, IOrderData } from './types';
+
 
 // Объявляем переменные состояния
 let gallery: Gallery;
@@ -20,6 +21,7 @@ let pageView: PageView;
 let modal: Modal;
 let api: BuyApi;
 
+let basketModalIsOpen = false;
 
 function initializeApp(): void {
     console.log('1: Init App');
@@ -132,46 +134,51 @@ function handleCatalogChanged(data: { products: any[] }): void {
 }
 
 function subscribeToEvents(): void {
-    // 1. Подписываемся на событие изменения корзины
+    // ОСТАВЛЯЕМ ТОЛЬКО события от МОДЕЛЕЙ ДАННЫХ и ПРЕДСТАВЛЕНИЙ:
+    
+    // 1. От моделей данных (должны быть)
+    events.on('gallery:changed', (data: { products: any[], count: number }) => {
+        console.log('✅ Событие получено!', data);
+        handleCatalogChanged(data);
+    });
+    
     events.on('basket:changed', (data: { items: IProduct[], total: number, count: number }) => {
         console.log('📦 Событие: basket:changed');
-        handleBasketChanged(data);
+        handleBasketChanged(data);     
     });
-
-    console.log('Main: подписываюсь на basket:open');
+    
+    // 2. От представлений (должны быть)
     events.on('basket:open', () => {
         console.log('✅ Main: получено basket:open - ОТКРЫВАЮ КОРЗИНУ');
         openBasketModal();
     });
     
-    // 2. Подписываемся на добавление товара в корзину
     events.on('product:add-to-basket', (data: { id: string }) => {
         console.log('➕ Событие: product:add-to-basket', data.id);
         handleAddToBasket(data.id);
     });
     
-    // 3. Подписываемся на выбор товара для просмотра
     events.on('product:select', (data: { id: string }) => {
         console.log('👁️ Событие: product:select', data.id);
         handleProductSelect(data.id);
     });
-    // 4. 
+    
     events.on('gallery:selected', (data: { product: IProduct }) => {
         console.log('👁️ Событие: gallery:selected получено');
         if (data && data.product) {
             openProductPreview(data.product);
-        } else {
-            console.error('❌ Нет данных о товаре в событии gallery:selected');
         }
     });
+    
     events.on('product:toggle-from-preview', (data: { id: string }) => {
-      console.log('🔄 Main: получено событие product:toggle-from-preview', data.id);
-      handleToggleFromPreview(data.id);
+        console.log('🔄 Main: получено событие product:toggle-from-preview', data.id);
+        handleToggleFromPreview(data.id);
     });
 }
 
 function openBasketModal(): void {
     console.log('🛒 openBasketModal вызван!');
+    basketModalIsOpen = true;
     
     const items = basket.getSelectedProducts();
     const total = basket.getTotalPrice();
@@ -235,14 +242,28 @@ function openBasketModal(): void {
                 if (indexElement) indexElement.textContent = String(index + 1);
                 if (titleElement) titleElement.textContent = item.title;
                 if (priceElement) priceElement.textContent = `${item.price} синапсов`;
+
+                console.log('Поиск элементов в itemElement:');
+                console.log('.basket__item-delete:', itemElement.querySelector('.basket__item-delete'));
+                console.log('.card__button:', itemElement.querySelector('.card__button'));
+                console.log('Все кнопки:', itemElement.querySelectorAll('button'));
                 
                 // Добавить обработчик удаления
                 if (deleteButton) {
                     deleteButton.addEventListener('click', (event) => {
                         event.preventDefault();
                         event.stopPropagation();
-                        console.log(`🗑️ Удаление товара из корзины: ${item.id}`);
+                        
+                        console.log(`🗑️ Удаляю товар: ${item.title}`);
                         basket.removeProduct(item.id);
+                        
+                        // Если корзина открыта - просто перезагрузить ее
+                        if (modal.isOpened()) {
+                            console.log('🔄 Перезагружаю корзину...');
+                            // Закрыть и открыть заново
+                            modal.close();
+                            setTimeout(() => openBasketModal(), 50);
+                        }
                     });
                 }
                 
@@ -279,8 +300,9 @@ function openBasketModal(): void {
             
             // Добавить новый обработчик
             newButton.addEventListener('click', () => {
-                console.log('📝 Нажата кнопка "Оформить"');
-                events.emit('order:start');
+              console.log('📝 Нажата кнопка "Оформить"');
+              // ВЫЗЫВАЕМ НАПРЯМУЮ, не генерируем событие
+              openOrderForm();
             });
         }
     }
@@ -342,6 +364,287 @@ function handleToggleFromPreview(productId: string): void {
         console.log(`➕ Добавление товара "${product.title}" в корзину`);
         basket.addProduct(product);
     }
+}
+
+function openOrderForm(): void {
+    console.log('📋 Открытие формы заказа');
+    
+    const template = document.querySelector('#order') as HTMLTemplateElement;
+    if (!template) return;
+    
+    const clonedTemplate = template.content.cloneNode(true) as HTMLElement;
+    const container = clonedTemplate.firstElementChild as HTMLElement;
+    
+    const form = container.querySelector('form') as HTMLFormElement;
+    const addressInput = container.querySelector('input[name="address"]') as HTMLInputElement;
+    const onlineButton = container.querySelector('button[name="card"]') as HTMLButtonElement;
+    const cashButton = container.querySelector('button[name="cash"]') as HTMLButtonElement;
+    const nextButton = container.querySelector('.order__button') as HTMLButtonElement;
+    
+    // Используем текущие данные из buyer
+    const currentData = buyer.getBuyerData();
+    let selectedPayment: TPayment = currentData.payment || '';
+    let address = currentData.address || '';
+    
+    // Установить текущие значения в форму
+    if (addressInput && address) {
+        addressInput.value = address;
+    }
+    
+    // 1. Функция валидации
+    const validateForm = (): void => {
+        const isValid = selectedPayment !== '' && address.length > 5;
+        
+        if (nextButton) {
+            nextButton.disabled = !isValid;
+            console.log('Форма валидна?', isValid, 'payment:', selectedPayment, 'address:', address);
+        }
+    };
+    
+    // 2. Обработчики оплаты
+    if (onlineButton) {
+        onlineButton.addEventListener('click', () => {
+            selectedPayment = 'card';
+            console.log('Выбрана онлайн оплата (card)');
+            
+            const allPaymentButtons = container.querySelectorAll('.order__buttons .button');
+            allPaymentButtons.forEach(btn => {
+                btn.classList.remove('button_alt-active');
+            });
+            
+            onlineButton.classList.add('button_alt-active');
+            
+            buyer.setBuyerData({ payment: 'card' });
+            validateForm();
+        });
+    }
+    
+    if (cashButton) {
+        cashButton.addEventListener('click', () => {
+            selectedPayment = 'cash';
+            console.log('Выбрана оплата при получении (cash)');
+            
+            const allPaymentButtons = container.querySelectorAll('.order__buttons .button');
+            allPaymentButtons.forEach(btn => {
+                btn.classList.remove('button_alt-active');
+            });
+            
+            cashButton.classList.add('button_alt-active');
+            
+            buyer.setBuyerData({ payment: 'cash' });
+            validateForm();
+        });
+    }
+    
+    // 3. Обработчик адреса
+    if (addressInput) {
+        if (address) addressInput.value = address;
+        
+        addressInput.addEventListener('input', () => {
+            address = addressInput.value.trim();
+            console.log('Адрес:', address);
+            
+            buyer.setBuyerData({ address });
+            validateForm();
+        });
+    }
+    
+    console.log('🔍 openOrderForm вызван, форма:', form);
+    if (form) {
+        console.log('🔍 Form имеет action?:', form.action);
+        console.log('🔍 Form method:', form.method);
+        form.addEventListener('submit', function(event) {
+            console.log('=== FORM SUBMIT ===');
+            event.preventDefault();
+            
+            console.log('selectedPayment:', selectedPayment, 'address:', address);
+            
+            if (selectedPayment && address) {
+                console.log('✅ Шаг 1 оформления завершен');
+                
+                modal.close();
+                
+                // ВЫЗЫВАЕМ НАПРЯМУЮ, не генерируем событие
+                setTimeout(() => {
+                    openContactsForm();
+                }, 100);
+            }          
+            return false;
+        });
+    }
+    // Инициализируем валидацию
+    validateForm();
+    
+    console.log('=== ПРОВЕРКА КНОПОК ПЕРЕД ОТКРЫТИЕМ ===');
+    console.log('Онлайн кнопка классы:', onlineButton?.className);
+    console.log('Наличная кнопка классы:', cashButton?.className);
+
+    modal.open(container);
+}
+
+function openContactsForm(): void {
+    console.log('📞 Открытие формы контактов');
+    
+    const template = document.querySelector('#contacts') as HTMLTemplateElement;
+    if (!template) return;
+    
+    const clonedTemplate = template.content.cloneNode(true) as HTMLElement;
+    const container = clonedTemplate.firstElementChild as HTMLElement;
+    
+    const form = container.querySelector('form[name="contacts"]') as HTMLFormElement;
+    const emailInput = container.querySelector('input[name="email"]') as HTMLInputElement;
+    const phoneInput = container.querySelector('input[name="phone"]') as HTMLInputElement;
+    const submitButton = container.querySelector('button[type="submit"]') as HTMLButtonElement;
+    
+    // Используем текущие данные
+    const currentData = buyer.getBuyerData();
+    let email = currentData.email || '';
+    let phone = currentData.phone || '';
+    
+    // Установить текущие значения
+    if (emailInput && email) emailInput.value = email;
+    if (phoneInput && phone) phoneInput.value = phone;
+    
+    // 1. Обработчик email
+    if (emailInput) {
+        emailInput.addEventListener('input', () => {
+            email = emailInput.value.trim();
+            console.log('Email:', email);
+            
+            // Сохраняем в buyer
+            buyer.setBuyerData({ email });
+            validateForm();
+        });
+    }
+    
+    // 2. Обработчик телефона
+    if (phoneInput) {
+        phoneInput.addEventListener('input', () => {
+            phone = phoneInput.value.trim();
+            console.log('Телефон:', phone);
+            
+            // Сохраняем в buyer
+            buyer.setBuyerData({ phone });
+            validateForm();
+        });
+    }
+    
+    // 3. Валидация (упрощенная)
+    function validateForm(): void {
+        const emailValid = email.includes('@') && email.includes('.');
+        const phoneValid = phone.length >= 10;
+        const isValid = emailValid && phoneValid;
+        
+        if (submitButton) {
+            submitButton.disabled = !isValid;
+            console.log('Форма контактов валидна?', isValid);
+        }
+    }
+    
+    // Инициализируем валидацию
+    validateForm();
+    
+    // 4. Обработчик отправки
+    if (form) {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            
+            if (email && phone) {
+                console.log('✅ Шаг 2 оформления завершен');
+                
+                const validation = buyer.validate();
+                if (Object.keys(validation.errors).length === 0) {
+                    // ВЫЗЫВАЕМ НАПРЯМУЮ
+                    submitOrder();
+                }
+            }
+        });
+    }
+    
+    modal.open(container);
+}
+
+async function submitOrder(): Promise<void> {
+    console.log('🚀 Отправка заказа...');
+    
+    // 1. Проверить валидность данных
+    const validation = buyer.validate();
+    if (Object.keys(validation.errors).length > 0) {
+        console.error('❌ Данные невалидны:', validation.errors);
+        return;
+    }
+    
+    // 2. Собрать данные для заказа
+    const buyerData = buyer.getBuyerData();
+    
+    // Проверяем, что payment точно 'card' или 'cash'
+    if (buyerData.payment !== 'card' && buyerData.payment !== 'cash') {
+        console.error('❌ Неверный способ оплаты:', buyerData.payment);
+        return;
+    }
+    
+    const orderData: IOrderData = {
+        payment: buyerData.payment, // Теперь точно 'card' | 'cash'
+        email: buyerData.email,
+        phone: buyerData.phone,
+        address: buyerData.address,
+        total: basket.getTotalPrice(),
+        items: basket.getSelectedProducts().map(item => item.id)
+    };
+    
+    console.log('Данные для отправки:', orderData);
+    console.log('Товары в заказе:', basket.getSelectedProducts().map(p => p.title));
+    
+    try {
+        // 3. Отправка на сервер
+        console.log('📤 Отправляю заказ на сервер...');
+        const result = await api.submitOrder(orderData);
+        console.log('✅ Заказ успешно отправлен:', result);
+        
+        // 4. Очистить корзину и данные покупателя
+        basket.clearBasket();
+        buyer.clearData();
+        
+        // 5. Показать окно успеха
+        openSuccessModal(result.total);
+        
+    } catch (error) {
+        console.error('❌ Ошибка при отправке заказа:', error);
+    }
+}
+
+function openSuccessModal(total: number): void {
+    console.log('🎉 Открытие окна успешного заказа, сумма:', total);
+    
+    const template = document.querySelector('#success') as HTMLTemplateElement;
+    if (!template) {
+        console.error('❌ Шаблон #success не найден');
+        return;
+    }
+    
+    const clonedTemplate = template.content.cloneNode(true) as HTMLElement;
+    const container = clonedTemplate.firstElementChild as HTMLElement;
+    
+    // Найти элементы
+    const description = container.querySelector('.order-success__description') as HTMLElement;
+    const closeButton = container.querySelector('.order-success__close') as HTMLButtonElement;
+    
+    // Заполнить сумму
+    if (description) {
+        description.textContent = `Списано ${total} синапсов`;
+    }
+    
+    // Обработчик закрытия
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            console.log('Закрытие окна успеха');
+            modal.close();
+        });
+    }
+    
+    // Открыть модальное окно
+    modal.open(container);
+    console.log('✅ Окно успеха открыто');
 }
 
 // Запуск при загрузке DOM
