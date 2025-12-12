@@ -1,5 +1,5 @@
-import { IBuyer, IValidationResult, TPayment } from '../../types'; 
-import { events } from '../base/Events';
+import { IBuyer, IValidationResult, TPayment } from "../../types";
+import { events } from "../base/Events";
 
 export class Buyer {
   private payment: TPayment;
@@ -9,15 +9,14 @@ export class Buyer {
 
   constructor(initialData: Partial<IBuyer> = {}) {
     // Инициализируем поля с дефолтными значениями
-    this.payment = initialData.payment || '';
-    this.email = initialData.email || '';
-    this.phone = initialData.phone || '';
-    this.address = initialData.address || '';
+    this.payment = initialData.payment || "";
+    this.email = initialData.email || "";
+    this.phone = initialData.phone || "";
+    this.address = initialData.address || "";
   }
 
   // сохранение данных в модели
   public setBuyerData(data: Partial<IBuyer>): void {
-
     if (data.payment !== undefined) {
       this.payment = data.payment;
     }
@@ -30,7 +29,7 @@ export class Buyer {
     if (data.address !== undefined) {
       this.address = data.address;
     }
-    events.emit('buyer:changed', {});
+    events.emit("buyer:changed", {});
   }
 
   // получение всех данных покупателя
@@ -39,45 +38,45 @@ export class Buyer {
       payment: this.payment,
       email: this.email,
       phone: this.phone,
-      address: this.address
+      address: this.address,
     };
   }
 
   // очистка данных покупателя
   public clearData(): void {
-    this.payment = '';
-    this.email = '';
-    this.phone = '';
-    this.address = '';
-    events.emit('buyer:cleared', {});
+    this.payment = "";
+    this.email = "";
+    this.phone = "";
+    this.address = "";
+    events.emit("buyer:cleared", {});
   }
 
   // проверка валидности полей
   public validate(): IValidationResult {
-    const errors: IValidationResult['errors'] = {};
-    
+    const errors: IValidationResult["errors"] = {};
+
     // Проверка способа оплаты
     if (!this.payment) {
-      errors.payment = 'Способ оплаты обязателен для заполнения';
-    } else if (this.payment !== 'card' && this.payment !== 'cash') {
+      errors.payment = "Способ оплаты обязателен для заполнения";
+    } else if (this.payment !== "card" && this.payment !== "cash") {
       errors.payment = 'Способ оплаты должен быть "card" или "cash"';
     }
-    
+
     // Проверка email
     if (!this.email.trim()) {
-      errors.email = 'Email обязателен для заполнения';
-    }
-    
-    // Проверка телефона
-    if (!this.phone.trim()) {
-      errors.phone = 'Телефон обязателен для заполнения';
-    }
-    
-    // Проверка адреса
-    if (!this.address.trim()) {
-      errors.address = 'Адрес обязателен для заполнения';
+      errors.email = "Email обязателен для заполнения";
     }
 
-    return { errors } ;
+    // Проверка телефона
+    if (!this.phone.trim()) {
+      errors.phone = "Телефон обязателен для заполнения";
+    }
+
+    // Проверка адреса
+    if (!this.address.trim()) {
+      errors.address = "Адрес обязателен для заполнения";
+    }
+
+    return { errors };
   }
 }

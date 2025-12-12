@@ -1,5 +1,5 @@
-import { IProduct } from '../../types';
-import { events } from '../base/Events';
+import { IProduct } from "../../types";
+import { events } from "../base/Events";
 
 export class Gallery {
   private _allProducts: IProduct[] = [];
@@ -13,9 +13,9 @@ export class Gallery {
   // сохранение массива товаров полученного в параметрах метода
   public setAllProducts(products: IProduct[]) {
     this._allProducts = products;
-    events.emit('gallery:changed', {
+    events.emit("gallery:changed", {
       products: this._allProducts,
-      count: this._allProducts.length
+      count: this._allProducts.length,
     });
   }
 
@@ -26,15 +26,15 @@ export class Gallery {
 
   // получение одного товара по его id
   public getProduct(id: string): IProduct | undefined {
-    return this._allProducts.find(product => product.id === id);
+    return this._allProducts.find((product) => product.id === id);
   }
 
   // сохранение товара для подробного отображения
   public setDetailedProduct(product: IProduct) {
     this._selectedProduct = product;
-    events.emit('gallery:selected', {
+    events.emit("gallery:selected", {
       product,
-      previousProduct: this._selectedProduct
+      previousProduct: this._selectedProduct,
     });
   }
 

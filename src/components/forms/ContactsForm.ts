@@ -1,7 +1,7 @@
-import { BaseForm } from '../base/BaseForm';
-import { events } from '../base/Events';
-import { ensureElement } from '../../utils/utils';
-import { IBuyer } from '../../types';
+import { BaseForm } from "../base/BaseForm";
+import { events } from "../base/Events";
+import { ensureElement } from "../../utils/utils";
+import { IBuyer } from "../../types";
 
 export class ContactsForm extends BaseForm {
   private emailInput: HTMLInputElement;
@@ -11,41 +11,53 @@ export class ContactsForm extends BaseForm {
 
   constructor(container: HTMLElement) {
     if (!container) {
-      throw new Error('Container element is required for ContactsForm');
+      throw new Error("Container element is required for ContactsForm");
     }
     super(container);
 
-    this.emailInput = ensureElement<HTMLInputElement>('input[name="email"]', this.formElement);
-    this.phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', this.formElement);
-    this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.formElement);
-    this.errorElement = ensureElement<HTMLElement>('.form__errors', this.formElement);
+    this.emailInput = ensureElement<HTMLInputElement>(
+      'input[name="email"]',
+      this.formElement
+    );
+    this.phoneInput = ensureElement<HTMLInputElement>(
+      'input[name="phone"]',
+      this.formElement
+    );
+    this.submitButton = ensureElement<HTMLButtonElement>(
+      'button[type="submit"]',
+      this.formElement
+    );
+    this.errorElement = ensureElement<HTMLElement>(
+      ".form__errors",
+      this.formElement
+    );
 
     const updateState = () => {
-      const filled = this.emailInput.value.trim() && this.phoneInput.value.trim();
+      const filled =
+        this.emailInput.value.trim() && this.phoneInput.value.trim();
       this.submitButton.disabled = !filled;
 
       if (!filled && this.errorElement) {
-        this.errorElement.textContent = '';
+        this.errorElement.textContent = "";
       }
     };
 
     updateState();
 
-    this.emailInput.addEventListener('input', () => {
-      events.emit('order:change-email', { email: this.emailInput.value });
+    this.emailInput.addEventListener("input", () => {
+      events.emit("order:change-email", { email: this.emailInput.value });
       updateState();
     });
 
-
-    this.phoneInput.addEventListener('input', () => {
-      events.emit('order:change-phone', { phone: this.phoneInput.value });
+    this.phoneInput.addEventListener("input", () => {
+      events.emit("order:change-phone", { phone: this.phoneInput.value });
       updateState();
     });
 
-    this.formElement.addEventListener('submit', (event) => {
+    this.formElement.addEventListener("submit", (event) => {
       event.preventDefault();
       if (!this.submitButton.disabled) {
-        events.emit('order:submit-stepTwo', {});
+        events.emit("order:submit-stepTwo", {});
       }
     });
   }
@@ -58,10 +70,16 @@ export class ContactsForm extends BaseForm {
     this.submitButton.disabled = !filled;
   }
 
-  setValidationState({ canSubmit, errorMessage }: { canSubmit: boolean; errorMessage?: string }) {
+  setValidationState({
+    canSubmit,
+    errorMessage,
+  }: {
+    canSubmit: boolean;
+    errorMessage?: string;
+  }) {
     this.submitButton.disabled = !canSubmit;
     if (this.errorElement) {
-      this.errorElement.textContent = errorMessage ?? '';
+      this.errorElement.textContent = errorMessage ?? "";
     }
   }
 }

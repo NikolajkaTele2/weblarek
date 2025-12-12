@@ -1,45 +1,54 @@
-import { events } from '../base/Events';
-import { ensureAllElements } from '../../utils/utils';
+import { events } from "../base/Events";
+import { ensureAllElements } from "../../utils/utils";
 
 export class SuccessView {
-	private container: HTMLElement;
-	private button: HTMLButtonElement | null;
-	// private descriptionElement: HTMLElement | null;
+  private container: HTMLElement;
+  private button: HTMLButtonElement | null;
+  // private descriptionElement: HTMLElement | null;
 
-	constructor(container: HTMLElement) {
-		if (!container) {
-			throw new Error('Container element is required for SuccessView');
-		}
-  
-		this.container = container;
+  constructor(container: HTMLElement) {
+    if (!container) {
+      throw new Error("Container element is required for SuccessView");
+    }
 
-		const [primaryButton] = ensureAllElements<HTMLButtonElement>('.success__button',container);
-		const [typeButton] = ensureAllElements<HTMLButtonElement>('button[type="button"]',container);
-		const [anyButton] = ensureAllElements<HTMLButtonElement>('button',container);
+    this.container = container;
 
-		this.button = primaryButton ?? typeButton ?? anyButton ?? null;
+    const [primaryButton] = ensureAllElements<HTMLButtonElement>(
+      ".success__button",
+      container
+    );
+    const [typeButton] = ensureAllElements<HTMLButtonElement>(
+      'button[type="button"]',
+      container
+    );
+    const [anyButton] = ensureAllElements<HTMLButtonElement>(
+      "button",
+      container
+    );
 
-		// const [successDescription] = ensureAllElements<HTMLElement>('.success__description',container);
-		// const [modalDescription] = ensureAllElements<HTMLElement>('.modal__description',container);
+    this.button = primaryButton ?? typeButton ?? anyButton ?? null;
 
-		// this.descriptionElement = successDescription ?? modalDescription ?? null;
+    // const [successDescription] = ensureAllElements<HTMLElement>('.success__description',container);
+    // const [modalDescription] = ensureAllElements<HTMLElement>('.modal__description',container);
 
-		if (this.button) {
-			this.button.addEventListener('click', () => {
-				events.emit('success:close', {});
-			});
-		}
-	}
+    // this.descriptionElement = successDescription ?? modalDescription ?? null;
 
-	render(total: number = 0): HTMLElement {
-		const [priceElement] = ensureAllElements<HTMLElement>(
-			'.order-success__description',
-			this.container
-		);
+    if (this.button) {
+      this.button.addEventListener("click", () => {
+        events.emit("success:close", {});
+      });
+    }
+  }
 
-		if (priceElement) {
-			priceElement.textContent = `Списано ${total} синапсов`;
-		}
-		return this.container;
-	}
+  render(total: number = 0): HTMLElement {
+    const [priceElement] = ensureAllElements<HTMLElement>(
+      ".order-success__description",
+      this.container
+    );
+
+    if (priceElement) {
+      priceElement.textContent = `Списано ${total} синапсов`;
+    }
+    return this.container;
+  }
 }

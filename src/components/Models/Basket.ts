@@ -1,5 +1,5 @@
-import { IProduct } from '../../types';
-import { events } from '../base/Events';
+import { IProduct } from "../../types";
+import { events } from "../base/Events";
 
 export class Basket {
   private selectedProducts: IProduct[];
@@ -15,40 +15,38 @@ export class Basket {
 
   // добавление товара, который был получен в параметре, в массив корзины
   public addProduct(product: IProduct): void {
-    
     if (this.hasProduct(product.id)) {
-        console.log(`🛒 Товар "${product.title}" уже в корзине, не добавляю повторно`);
-        return;
+      return;
     }
 
     this.selectedProducts.push(product);
-    events.emit('basket:changed', {
+    events.emit("basket:changed", {
       items: this.selectedProducts,
       total: this.getTotalPrice(),
-      count: this.getItemsCount()
+      count: this.getItemsCount(),
     });
-    events.emit('basket:item-added', {
+    events.emit("basket:item-added", {
       product,
-      basket: this.selectedProducts
+      basket: this.selectedProducts,
     });
   }
 
   // удаление товара, полученного в параметре из массива корзины
   public removeProduct(productId: string): void {
-    const product = this.selectedProducts.find(p => p.id === productId);
+    const product = this.selectedProducts.find((p) => p.id === productId);
     this.selectedProducts = this.selectedProducts.filter(
-      product => product.id !== productId
+      (product) => product.id !== productId
     );
-    events.emit('basket:changed', {
+    events.emit("basket:changed", {
       items: this.selectedProducts,
       total: this.getTotalPrice(),
-      count: this.getItemsCount()
+      count: this.getItemsCount(),
     });
     if (product) {
-      events.emit('basket:item-removed', {
+      events.emit("basket:item-removed", {
         productId,
         product,
-        basket: this.selectedProducts
+        basket: this.selectedProducts,
       });
     }
   }
@@ -56,12 +54,12 @@ export class Basket {
   // очистка корзины
   public clearBasket(): void {
     this.selectedProducts = [];
-    events.emit('basket:changed', {
+    events.emit("basket:changed", {
       items: this.selectedProducts,
       total: this.getTotalPrice(),
-      count: this.getItemsCount()
+      count: this.getItemsCount(),
     });
-    events.emit('basket:cleared', {});
+    events.emit("basket:cleared", {});
   }
 
   // получение стоимости всех товаров в корзине
@@ -78,6 +76,6 @@ export class Basket {
 
   // проверка наличия товара в корзине по его id, полученного в параметр метода
   public hasProduct(productId: string): boolean {
-    return this.selectedProducts.some(product => product.id === productId);
+    return this.selectedProducts.some((product) => product.id === productId);
   }
 }

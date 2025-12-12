@@ -1,6 +1,6 @@
-import { Component } from './Component';
-import { IProduct } from '../../types';
-import { ensureElement, ensureAllElements } from '../../utils/utils';
+import { Component } from "./Component";
+import { IProduct } from "../../types";
+import { ensureElement, ensureAllElements } from "../../utils/utils";
 
 // Базовый класс для всех карточек товара
 export abstract class BaseCard extends Component<IProduct> {
@@ -15,16 +15,25 @@ export abstract class BaseCard extends Component<IProduct> {
 
     // Проверяем существование контейнера
     if (!container) {
-        throw new Error('Container element is required for BaseCard');
+      throw new Error("Container element is required for BaseCard");
     }
 
-    this.titleElement = ensureElement<HTMLElement>('.card__title', container);
-    this.priceElement = ensureElement<HTMLElement>('.card__price', container);
-    this.categoryElement = ensureElement<HTMLElement>('.card__category', container);
-    this.imageElement = ensureElement<HTMLImageElement>('.card__image', container);
+    this.titleElement = ensureElement<HTMLElement>(".card__title", container);
+    this.priceElement = ensureElement<HTMLElement>(".card__price", container);
+    this.categoryElement = ensureElement<HTMLElement>(
+      ".card__category",
+      container
+    );
+    this.imageElement = ensureElement<HTMLImageElement>(
+      ".card__image",
+      container
+    );
 
     // Кнопка может отсутствовать, поэтому используем ensureAllElements
-    const [button] = ensureAllElements<HTMLButtonElement>('.card__button', container);
+    const [button] = ensureAllElements<HTMLButtonElement>(
+      ".card__button",
+      container
+    );
     this.buttonElement = button ?? undefined;
   }
 
@@ -34,7 +43,7 @@ export abstract class BaseCard extends Component<IProduct> {
 
   set price(value: number | null) {
     this.priceElement.textContent =
-      value === null ? 'Бесценно' : `${value} синапсов`;
+      value === null ? "Бесценно" : `${value} синапсов`;
   }
 
   set category(value: string) {
@@ -43,11 +52,11 @@ export abstract class BaseCard extends Component<IProduct> {
 
   //добавление картинок с проверками
   set image(src: string) {
-      this.setImage(this.imageElement, src, this.titleElement.textContent ?? '');
-      
-      this.imageElement.onerror = () => {
-          console.warn(`Failed to load image: ${src}`);
-      };
+    this.setImage(this.imageElement, src, this.titleElement.textContent ?? "");
+
+    this.imageElement.onerror = () => {
+      console.warn(`Failed to load image: ${src}`);
+    };
   }
 
   setButtonDisabled(disabled: boolean, text?: string) {

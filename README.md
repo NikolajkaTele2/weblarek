@@ -424,7 +424,7 @@ modal:close — модальное окно закрыто
 | basket:item-added | Basket | `{ product: IProduct, basket: IProduct[] }` | добавление товара в корзину |
 | basket:item-removed | Basket | `{ productId: string, product: IProduct, basket: IProduct[] }` | удаление товара из корзины |
 | basket:cleared | Basket | `{}` | корзина очищена |
-| order:change-payment | DeliveryForm | `{ payment: 'card' | 'cash' }` | изменение способа оплаты |
+| order:change-payment | DeliveryForm | `{ payment: 'card' / 'cash' }` | изменение способа оплаты |
 | order:change-address | DeliveryForm | `{ address: string }` | изменение адреса |
 | order:submit-stepOne | DeliveryForm | `{}` | переход к следующему шагу |
 | order:change-email | ContactsForm | `{ email: string }` | изменение e-mail |
@@ -432,7 +432,7 @@ modal:close — модальное окно закрыто
 | order:submit-stepTwo | ContactsForm | `{}` | переход к оплате |
 | form:change | BaseForm | `{ name: string, value: string }` | изменение любого поля формы |
 | gallery:changed | Gallery | `{ products: IProduct[], count: number }` | изменение каталога товаров |
-| gallery:selected | Gallery | `{ product: IProduct, previousProduct: IProduct | null }` | выбор товара для детального просмотра |
+| gallery:selected | Gallery | `{ product: IProduct, previousProduct: IProduct / null }` | выбор товара для детального просмотра |
 | buyer:changed | Buyer | `{}` | изменение данных покупателя |
 | buyer:cleared | Buyer | `{}` | очистка данных покупателя |
 | modal:open | Modal | `{}` | открытие модального окна |
