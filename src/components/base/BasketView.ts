@@ -10,9 +10,9 @@ export class BasketView {
 	private emptyElement: HTMLParagraphElement;
 
 	constructor(container: HTMLElement) {
-    if (!container) {
-      throw new Error('Container element is required for BasketView');
-    }
+        if (!container) {
+            throw new Error('Container element is required for BasketView');
+        }
 		this.container = container;
 
 		this.listElement = ensureElement<HTMLElement>('.basket__list', container);
@@ -27,10 +27,27 @@ export class BasketView {
 			events.emit('basket:submit', {});
 		});
 
+		// ИЗМЕНЕНО: вызываем fixHeight вместо setInitialState
+		this.fixHeight();
+	}
 
-    this.container.classList.add('basket__empty');
-    this.submitButton.disabled = true;
-    this.totalElement.textContent = '0 синапсов';
+	/**
+	 * ФИКС высоты для 3 товаров
+	 * Было: 258px (помещается 2 товара)
+	 * Стало: 360px (помещается 3 товара)
+	 */
+	private fixHeight(): void {
+		// Начальное состояние
+		this.submitButton.disabled = true;
+		this.totalElement.textContent = '0 синапсов';
+		
+		// ВАЖНО: меняем высоту с 258px на 360px
+		this.listElement.style.maxHeight = '360px';
+		
+		// Включаем скролл если нужно
+		this.listElement.style.overflowY = 'auto';
+		
+		console.log('BasketView: высота исправлена (258px → 360px)');
 	}
 
 	setItems(items: HTMLElement[]): void {
@@ -38,25 +55,27 @@ export class BasketView {
 
 		const isEmpty = items.length === 0;
 
-
 		if (isEmpty) {
 			if (!this.listElement.contains(this.emptyElement)) {
 				this.listElement.appendChild(this.emptyElement);
 			}
+			// Для пустой корзины уменьшаем высоту
+			this.listElement.style.maxHeight = '100px';
+			this.listElement.style.overflowY = 'hidden';
 		} else if (this.listElement.contains(this.emptyElement)) {
 			this.emptyElement.remove();
-		}
-
-		if (isEmpty) {
-			this.container.style.height = '220px';
-		} else {
-			this.container.style.height = 'auto';
+			// Для непустой корзины возвращаем высоту 360px
+			this.listElement.style.maxHeight = '360px';
+			// ИЗМЕНЕНО: автоматически управляем скроллом
+			this.listElement.style.overflowY = items.length > 3 ? 'auto' : 'hidden';
 		}
 
 		this.submitButton.disabled = isEmpty;
-
-		this.container.style.overflow = 'hidden';
-		this.listElement.style.overflow = 'hidden';
+		if (isEmpty) {
+			this.submitButton.textContent = 'Корзина пуста';
+		} else {
+			this.submitButton.textContent = 'Оформить';
+		}
 	}
 
 	// Устанавливаем общую стоимость

@@ -17,10 +17,10 @@ export class CardPreview extends BaseCard {
 
 		this.descriptionElement = ensureElement<HTMLElement>('.card__text', container);
 
-    events.on('basket:changed', (data: { items: IProduct[] }) => {
-        console.log('CardPreview: получено basket:changed, обновляю кнопку');
-        this.updateButton(data.items);
-    });
+    // events.on('basket:changed', (data: { items: IProduct[] }) => {
+    //     console.log('CardPreview: получено basket:changed, обновляю кнопку');
+    //     this.updateButton(data.items);
+    // });
 
 		const button = this.buttonElement;
 		if (button) {
