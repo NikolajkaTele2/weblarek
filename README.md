@@ -112,11 +112,13 @@ interface IProduct {
 }
 
 interface IBuyer {
-  payment: string; //Способ оплаты карта или наличка (card/cash)
+  payment: TPayment; //Способ оплаты карта или наличка (card/cash)
   email: string; //Электронная почта
   phone: string; //Номер телефона
   address: string; //Адрес
 }
+
+type TPayment = 'card' | 'cash' | ''; // Возможные значения способа оплаты
 ```
 ### Классы данных
 
@@ -131,20 +133,20 @@ constructor(products?: IProduct[], selectedProduct?: IProduct)
 ```
 private _allProducts: IProduct[] - список всех товаров каталога
 
-private _selectedProduct: IProduct - выбранный товар
+private _selectedProduct: IProduct | null - выбранный товар для детального просмотра (может быть null)
 ```
 
 ##### Методы класса
 ```
-setAllProducts(products: IProduct[]) - сохранение массива товаров полученного в параметрах метода
+setAllProducts(products: IProduct[]): void - сохранение массива товаров
 
-getAllProducts(): IProduct[] - получение массива товаров из модели
+getAllProducts(): IProduct[] - получение массива всех товаров
 
-getProduct(id: string): IProduct | undefined - получение одного товара по его id
+getProduct(id: string): IProduct | undefined - получение товара по ID
 
-setDetailedProduct(product: IProduct) - сохранение товара для подробного отображения
+setDetailedProduct(product: IProduct): void - сохранение товара для детального просмотра
 
-getDetailedProduct(): IProduct | null - получение товара для подробного отображения
+getDetailedProduct(): IProduct | null - получение товара для детального просмотра
 ```
 #### Класс Basket
 
@@ -180,7 +182,7 @@ hasProduct(productId: string): boolean - проверка наличия тов�
 
 ##### Конструктор
 ```
-constructor(data?: Partial<IBuyer>)
+constructor(initialData: Partial<IBuyer> = {})
 ```
 
 ##### Поля класса
@@ -194,25 +196,13 @@ private phone: string; - телефон
 
 ##### Методы класса
 ```
-setBuyerData(data: Partial<IBuyer>): void - сохранение данных в модели
+setBuyerData(data: Partial<IBuyer>): void - сохранение данных покупателя в модели
 
-setPayment(payment: string): void - отдельное сохранение способа оплаты
-
-setEmail(email: string): void - отдельное сохранение почты
-
-setPhone(phone: string): void - отдельное сохранение телефона
-
-setAddress(address: string): void - отдельное сохранение адреса
-
-getBuyerData(): Partial<IBuyer> - получение всех данных покупателя
+getBuyerData(): IBuyer - получение всех данных покупателя
 
 clearData(): void - очистка данных покупателя
 
-validate(): IValidationResult - проверка валидности полей
-
-validateField(field: keyof IBuyer): { isValid: boolean; error?: string } - проверка валидности отдельного поля
- 
-getFieldName(field: keyof IBuyer): string - вспомогательная функция для validateField, которая возвращает запрашиваемое поле
+validate(): IValidationResult - проверка валидности всех полей
 ```
 
 ## Слой коммуникации
@@ -304,8 +294,8 @@ render(data?: Partial<T>)
 
 ```
 - constructor(container: HTMLElement)
-- render(data: IProduct)
-- update(items: IProduct[])
+- render(data: IProduct): HTMLElement
+- updateButton(items: IProduct[]): void - обновление состояния кнопки на основе содержимого корзины
 ```
 
 #### CardBasket
@@ -420,34 +410,34 @@ modal:close — модальное окно закрыто
 ### События
 
 
-| Event | Класс | Описание | 
-| ------------- | ------------- | ------------- | 
-| product:select | CardGallery | выбор товара в каталоге | 
-| product:add-to-basket | CardGallery | кнопка «Купить» в каталоге | 
-| product:toggle-from-preview | CardPreview | кнопка «Купить» или «Удалить из корзины» в модальном окне товара | 
-| basket:item-remove | CardBasket | удаление товара из карточки в корзине | 
-| basket:submit | BasketView | кнопка «Оформить» в корзине | 
-| basket:open | PageView | клик по иконке корзины | 
-| order:change-payment | DeliveryForm | изменение способа оплаты | 
-| order:change-address | DeliveryForm | изменение адреса | 
-| order:submit-stepOne | DeliveryForm | переход к следующему шагу | 
-| order:change-email | ContactsForm | изменение e-mail | 
-| order:change-phone | ContactsForm | изменение телефона | 
-| order:submit-stepTwo | ContactsForm | переход к следующему шагу | 
-| form:change | BaseForm | изменение любого поля формы | 
-| modal:open | Modal | открытие модального окна | 
-| modal:close | Modal | закрытие модального окна | 
-| success:close | SuccessView | закрытие окна успешного заказа | 
-| basket:changed | Basket | изменение корзины |
-| basket:item-added | Basket | добавление товара в корзину |
-| basket:item-removed | Basket | удаление товара из корзины |
-| basket:cleared | Basket | корзина очищена |
-| buyer:changed | Buyer | изменились данные покупателя |
-| buyer:cleared | Buyer | данные покупателя очищены |
-| gallery:changed | Gallery | изменился набор товаров |
-| gallery:selected | Gallery | выбраны товары |
+### События
 
-
+| Event | Класс | Данные | Описание |
+|-------|-------|--------|----------|
+| product:select | CardGallery | `{ id: string }` | выбор товара в каталоге |
+| product:add-to-basket | CardGallery | `{ id: string }` | кнопка «Купить» в каталоге |
+| product:toggle-from-preview | CardPreview | `{ id: string }` | кнопка «Купить» или «Удалить из корзины» в модальном окне товара |
+| basket:item-remove | CardBasket | `{ id: string }` | удаление товара из карточки в корзине |
+| basket:submit | BasketView | `{}` | кнопка «Оформить» в корзине |
+| basket:open | PageView | `{}` | клик по иконке корзины |
+| basket:changed | Basket | `{ items: IProduct[], total: number, count: number }` | изменение содержимого корзины |
+| basket:item-added | Basket | `{ product: IProduct, basket: IProduct[] }` | добавление товара в корзину |
+| basket:item-removed | Basket | `{ productId: string, product: IProduct, basket: IProduct[] }` | удаление товара из корзины |
+| basket:cleared | Basket | `{}` | корзина очищена |
+| order:change-payment | DeliveryForm | `{ payment: 'card' | 'cash' }` | изменение способа оплаты |
+| order:change-address | DeliveryForm | `{ address: string }` | изменение адреса |
+| order:submit-stepOne | DeliveryForm | `{}` | переход к следующему шагу |
+| order:change-email | ContactsForm | `{ email: string }` | изменение e-mail |
+| order:change-phone | ContactsForm | `{ phone: string }` | изменение телефона |
+| order:submit-stepTwo | ContactsForm | `{}` | переход к оплате |
+| form:change | BaseForm | `{ name: string, value: string }` | изменение любого поля формы |
+| gallery:changed | Gallery | `{ products: IProduct[], count: number }` | изменение каталога товаров |
+| gallery:selected | Gallery | `{ product: IProduct, previousProduct: IProduct | null }` | выбор товара для детального просмотра |
+| buyer:changed | Buyer | `{}` | изменение данных покупателя |
+| buyer:cleared | Buyer | `{}` | очистка данных покупателя |
+| modal:open | Modal | `{}` | открытие модального окна |
+| modal:close | Modal | `{}` | закрытие модального окна |
+| success:close | SuccessView | `{}` | закрытие окна успешного заказа |
 
 
 ## Презентер
