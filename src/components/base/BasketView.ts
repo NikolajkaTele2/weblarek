@@ -36,27 +36,13 @@ export class BasketView {
 
     const isEmpty = items.length === 0;
 
-    if (isEmpty) {
-      if (!this.listElement.contains(this.emptyElement)) {
-        this.listElement.appendChild(this.emptyElement);
-      }
-			this.container.style.height = 'auto';
-      this.listElement.style.maxHeight = "100px";
-      this.listElement.style.overflowY = "hidden";
-    } else if (this.listElement.contains(this.emptyElement)) {
+    if (this.listElement.contains(this.emptyElement)) {
       this.emptyElement.remove();
-      this.listElement.style.maxHeight = "220px";
-      this.listElement.style.overflowY = items.length > 3 ? "auto" : "hidden";
-    } else {
-			this.listElement.style.height = "auto"
-		}
-
-    this.submitButton.disabled = isEmpty;
-    if (isEmpty) {
-      this.submitButton.textContent = "Корзина пуста";
-    } else {
-      this.submitButton.textContent = "Оформить";
     }
+
+    // Кнопка оформления
+    this.submitButton.disabled = isEmpty;
+    this.submitButton.textContent = isEmpty ? "Корзина пуста" : "Оформить";
   }
 
   setTotal(total: number | null): void {

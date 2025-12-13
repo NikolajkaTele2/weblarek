@@ -16,17 +16,13 @@ export class CardGallery extends BaseCard {
       events.emit("product:select", { id: this.id });
     });
 
-    const button = this.buttonElement;
-    if (button) {
-      button.addEventListener("click", (event) => {
-        event.stopPropagation();
-
-        if (button.disabled) return; // "Недоступно" — ничего не делаем
-
-        events.emit("product:add-to-basket", { id: this.id });
-      });
+    if (this.buttonElement) {
+        this.buttonElement.addEventListener("click", (event) => {
+          event.stopPropagation();
+          events.emit("product:add-to-basket", { id: this.id });
+        });
+      }
     }
-  }
 
   render(data: IProduct): HTMLElement {
     if (!data || typeof data !== "object") {
@@ -43,7 +39,6 @@ export class CardGallery extends BaseCard {
     if (!data.title) {
       console.warn(`Product ${data.id} has empty title`);
     }
-    this.id = data.id;
     this.title = data.title;
     this.price = data.price;
     this.image = `${CDN_URL}/${data.image}`;
@@ -62,9 +57,9 @@ export class CardGallery extends BaseCard {
 
     if (this.buttonElement) {
       if (data.price === null) {
-        this.setButtonDisabled(true, "Недоступно");
+        this.setButtonState(true, "Недоступно");
       } else {
-        this.setButtonDisabled(false, "Купить");
+        this.setButtonState(false, "Купить");
       }
     }
     return this.container;

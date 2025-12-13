@@ -32,42 +32,23 @@ export class ContactsForm extends BaseForm {
       this.formElement
     );
 
-    const updateState = () => {
-      const filled =
-        this.emailInput.value.trim() && this.phoneInput.value.trim();
-      this.submitButton.disabled = !filled;
-
-      if (!filled && this.errorElement) {
-        this.errorElement.textContent = "";
-      }
-    };
-
-    updateState();
-
     this.emailInput.addEventListener("input", () => {
       events.emit("order:change-email", { email: this.emailInput.value });
-      updateState();
     });
 
     this.phoneInput.addEventListener("input", () => {
       events.emit("order:change-phone", { phone: this.phoneInput.value });
-      updateState();
     });
 
     this.formElement.addEventListener("submit", (event) => {
       event.preventDefault();
-      if (!this.submitButton.disabled) {
-        events.emit("order:submit-stepTwo", {});
-      }
+      events.emit("order:submit-stepTwo", {});     
     });
   }
 
   updateFields(data: Partial<IBuyer>) {
     if (data.email !== undefined) this.emailInput.value = data.email;
     if (data.phone !== undefined) this.phoneInput.value = data.phone;
-
-    const filled = this.emailInput.value.trim() && this.phoneInput.value.trim();
-    this.submitButton.disabled = !filled;
   }
 
   setValidationState({

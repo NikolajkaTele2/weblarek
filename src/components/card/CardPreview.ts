@@ -37,25 +37,16 @@ export class CardPreview extends BaseCard {
     }
   }
 
-  public updateButton(items: IProduct[]): void {
-    const button = this.buttonElement;
-    if (!button) return;
-
-    if (!this.id) {
-      console.warn("CardPreview.updateButton: id не установлен");
-      return;
-    }
+  public updateButton(isInBasket: boolean): void {
+    if (!this.buttonElement || !this.id) return;
 
     if (this.isFree) {
-      this.setButtonDisabled(true, "Недоступно");
+      this.setButtonState(true, "Недоступно");
       return;
     }
 
-    const isInBasket = items.some((item) => item.id === this.id);
-
     const buttonText = isInBasket ? "Удалить из корзины" : "Купить";
-
-    this.setButtonDisabled(false, buttonText);
+    this.setButtonState(false, buttonText);
   }
 
   render(data: IProduct): HTMLElement {
@@ -71,7 +62,7 @@ export class CardPreview extends BaseCard {
     this.descriptionElement.textContent = data.description;
 
     if (this.buttonElement && this.isFree) {
-      this.setButtonDisabled(true, "Недоступно");
+      this.setButtonState(true, "Недоступно");
     }
 
     return this.container;

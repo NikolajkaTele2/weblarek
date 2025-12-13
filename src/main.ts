@@ -95,10 +95,9 @@ events.on<{ id: string }>("product:select", ({ id }) => {
 // 3. Обработка события "товар выбран для детального просмотра"
 events.on<{ product: IProduct }>("gallery:selected", ({ product }) => {
   if (!product) return;
-  
   const content = previewCard.render(product); // Рендерим карточку превью
-  const itemsInBasket = basket.getSelectedProducts(); // Получаем текущую корзину
-  previewCard.updateButton(itemsInBasket); // Обновляем состояние кнопки "Купить/Удалить"
+  const isInBasket = basket.hasProduct(product.id);
+  previewCard.updateButton(isInBasket);; // Обновляем состояние кнопки "Купить/Удалить"
   modal.open(content); // Открываем в модальном окне
 });
 
@@ -141,24 +140,26 @@ events.on<{ id: string }>("basket:item-remove", ({ id }) => {
 events.on<{ items: IProduct[]; total: number; count: number }>(
   "basket:changed",
   ({ items, total, count }) => {
-    // Обновляем счетчик в шапке
+    // 1. Обновляем счетчик в шапке
     page.setBasketCounter(count);
     
-    // Обновляем кнопку в превью товара
-    previewCard.updateButton(items);
+    const selectedProduct = gallery.getDetailedProduct();
+    if (selectedProduct) {
+      // Спрашиваем у Модели Basket: "Этот товар в корзине?"
+      const isInBasket = basket.hasProduct(selectedProduct.id);
+      // Говорим View: "Покажи кнопку соответственно"
+      previewCard.updateButton(isInBasket); // ← передаем BOOLEAN
+    }
     
-    // Создаем карточки товаров для корзины
+    // 3. Создаем карточки товаров для корзины
     const itemNodes = items.map((item, index) => {
-      const view = new CardBasket(); // Создаем View для товара в корзине
-      return view.render(item, index); // Рендерим с данными и индексом
+      const view = new CardBasket();
+      return view.render(item, index);
     });
     
-    // Обновляем представление корзины
-    basketView.setItems(itemNodes); // Передаем карточки товаров
-    basketView.setTotal(total);     // Устанавливаем общую сумму
-    
-    // BasketView автоматически отключит кнопку "Оформить" если items пуст
-    // и покажет "Корзина пуста" через emptyElement
+    // 4. Обновляем представление корзины
+    basketView.setItems(itemNodes);
+    basketView.setTotal(total);
   }
 );
 

@@ -1,6 +1,6 @@
 import { Component } from "./Component";
 import { IProduct } from "../../types";
-import { ensureElement, ensureAllElements } from "../../utils/utils";
+import { ensureElement } from "../../utils/utils";
 
 // Базовый класс для всех карточек товара
 export abstract class BaseCard extends Component<IProduct> {
@@ -8,7 +8,7 @@ export abstract class BaseCard extends Component<IProduct> {
   protected priceElement: HTMLElement;
   protected categoryElement: HTMLElement;
   protected imageElement: HTMLImageElement;
-  protected buttonElement?: HTMLButtonElement;
+  protected buttonElement: HTMLButtonElement | null;
 
   constructor(container: HTMLElement) {
     super(container);
@@ -29,12 +29,7 @@ export abstract class BaseCard extends Component<IProduct> {
       container
     );
 
-    // Кнопка может отсутствовать, поэтому используем ensureAllElements
-    const [button] = ensureAllElements<HTMLButtonElement>(
-      ".card__button",
-      container
-    );
-    this.buttonElement = button ?? undefined;
+    this.buttonElement = container.querySelector(".card__button");
   }
 
   set title(value: string) {
@@ -59,7 +54,7 @@ export abstract class BaseCard extends Component<IProduct> {
     };
   }
 
-  setButtonDisabled(disabled: boolean, text?: string) {
+  setButtonState(disabled: boolean, text?: string) {
     if (!this.buttonElement) return;
     this.buttonElement.disabled = disabled;
     if (text) this.buttonElement.textContent = text;
